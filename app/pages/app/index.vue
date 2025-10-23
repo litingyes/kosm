@@ -1,11 +1,11 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 definePageMeta({
   redirect: {
-    name: 'app',
+    name: 'app-chat',
   },
 })
 </script>
 
 <template>
-  <div />
+  <NuxtPage />
 </template>

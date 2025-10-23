@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "streetsidesoftware.code-spell-checker",
+    "antfu.iconify"
+  ]
+}

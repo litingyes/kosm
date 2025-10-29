@@ -14,13 +14,16 @@
     "fontaine",
     "iconify",
     "kosm",
+    "langchain",
     "lucide",
+    "micromark",
     "Nuxt",
     "nuxthq",
     "nuxtjs",
     "optiongroup",
     "primeui",
     "primevue",
+    "vnode",
     "vueuse"
   ],
 

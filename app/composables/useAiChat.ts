@@ -68,7 +68,7 @@ export function useAiChat(options?: AiChatOptions) {
 
     loading.value = true
 
-    for await (const chunk of await model.value!.stream(question)) {
+    for await (const chunk of await model.value!.stream(messages.value)) {
       if (!lastMessage.value || lastMessage.value.type !== 'ai') {
         messages.value.push(chunk)
       }

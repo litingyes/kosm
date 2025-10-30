@@ -53,38 +53,75 @@ export function useAiChat(options?: AiChatOptions) {
     })
   }
 
-  const messages = ref<Array<AiChatMessage>>([])
-  const lastMessage = computed(() => {
-    if (!messages.value.length) {
-      return null
-    }
+  const messages = shallowRef<Array<AiChatMessage>>([])
 
-    return messages.value[messages.value.length - 1]
-  })
-
-  const loading = ref(false)
+  const status = ref<'error' | 'submitted' | 'streaming' | 'ready'>('ready')
+  const abortController = shallowRef<AbortController | null>(null)
   const send = async (question: string) => {
-    messages.value.push(new HumanMessage(question))
+    status.value = 'submitted'
 
-    loading.value = true
+    const humanMessage = new HumanMessage([
+      {
+        type: 'text',
+        text: question,
+      },
+    ])
 
-    for await (const chunk of await model.value!.stream(messages.value)) {
-      if (!lastMessage.value || lastMessage.value.type !== 'ai') {
-        messages.value.push(chunk)
+    messages.value.push(humanMessage)
+
+    abortController.value = new AbortController()
+
+    try {
+      for await (const chunk of await model.value!.stream(messages.value, {
+        signal: abortController.value!.signal,
+      })) {
+        status.value = 'streaming'
+
+        const lastMessage = messages.value[messages.value.length - 1]!
+
+        if (!lastMessage || lastMessage.type !== 'ai') {
+          messages.value.push(chunk)
+        }
+        else {
+          messages.value[messages.value.length - 1] = (lastMessage as AIMessageChunk).concat(chunk)
+        }
+
+        triggerRef(messages)
+      }
+
+      status.value = 'ready'
+    }
+    catch (error) {
+      console.error(error)
+      status.value = 'error'
+    }
+    finally {
+      const lastMessage = messages.value[messages.value.length - 1]!
+      if (lastMessage.type === 'human') {
+        lastMessage.id = crypto.randomUUID()
       }
       else {
-        messages.value[messages.value.length - 1] = (lastMessage.value as AIMessageChunk).concat(chunk)
+        humanMessage.id = lastMessage.id
       }
     }
+  }
+  const stop = () => {
+    if (!abortController.value) {
+      return
+    }
 
-    loading.value = false
+    abortController.value.abort()
+    abortController.value = null
+
+    status.value = 'ready'
   }
 
   return {
     model,
     messages,
 
-    loading,
+    status,
     send,
+    stop,
   }
 }

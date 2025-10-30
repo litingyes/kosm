@@ -3,7 +3,7 @@ const sidebarCollapsed = ref(false)
 
 const prompt = ref('')
 
-const { messages, send } = useAiChat({
+const { messages, send, stop, status } = useAiChat({
   model: {
     provider: 'default',
   },
@@ -46,7 +46,18 @@ function onSend() {
         </UDashboardNavbar>
       </template>
       <template #body>
-        <AiMessages :messages="messages" />
+        <UChatMessages
+          :status="status"
+          should-auto-scroll
+          should-scroll-to-bottom
+        >
+          <AiMessage
+            v-for="(message, i) in messages"
+            :key="message.type + message.id "
+            :message="message"
+            :show-actions="i === messages.length - 1"
+          />
+        </UChatMessages>
       </template>
       <template #footer>
         <div class="p-6">
@@ -54,7 +65,7 @@ function onSend() {
             <template #footer>
               <div class="w-full flex items-center justify-between">
                 <div />
-                <UChatPromptSubmit />
+                <UChatPromptSubmit :status="status" @stop="stop" />
               </div>
             </template>
           </UChatPrompt>

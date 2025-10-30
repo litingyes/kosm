@@ -46,9 +46,7 @@ function onSend() {
         </UDashboardNavbar>
       </template>
       <template #body>
-        <div class="flex flex-col gap-2">
-          <AiMessage v-for="message in messages" :key="message.id" :message="message" />
-        </div>
+        <AiMessages :messages="messages" />
       </template>
       <template #footer>
         <div class="p-6">

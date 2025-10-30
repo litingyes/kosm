@@ -7,18 +7,18 @@ defineProps<{
 </script>
 
 <template>
-  <div v-if="message.type === 'human'">
-    <div class="flex items-center justify-end ">
-      <div class="text-sm bg-elevated px-2 py-1 rounded-lg">
-        {{ message.content }}
+  <div class="text-base text-default">
+    <template v-if="message.type === 'human'">
+      <div class="flex items-center justify-end ">
+        <div class="bg-elevated px-3 py-1.5 rounded-lg">
+          {{ message.content }}
+        </div>
       </div>
-    </div>
-  </div>
-  <div v-else>
-    <div class="flex items-center">
-      <div class="text-sm text-default">
+    </template>
+    <template v-else>
+      <div class="flex items-center">
         <AiMarkdown :content="message.content as string" stream />
       </div>
-    </div>
+    </template>
   </div>
 </template>

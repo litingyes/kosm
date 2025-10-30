@@ -22,6 +22,8 @@ export interface AiChatOptions {
   model?: DefaultChatModel | OpenAIChatModel
 }
 
+export type AiChatMessage = HumanMessage | AIMessage
+
 export function useAiChat(options?: AiChatOptions) {
   const config = useRuntimeConfig()
 
@@ -51,7 +53,7 @@ export function useAiChat(options?: AiChatOptions) {
     })
   }
 
-  const messages = ref<Array<HumanMessage | AIMessage>>([])
+  const messages = ref<Array<AiChatMessage>>([])
   const lastMessage = computed(() => {
     if (!messages.value.length) {
       return null

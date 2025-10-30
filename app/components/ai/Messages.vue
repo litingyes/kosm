@@ -8,6 +8,11 @@ defineProps<{
 
 <template>
   <div class="flex flex-col gap-2 overflow-auto">
-    <AiMessage v-for="message in messages" :key="message.id" :message="message" />
+    <AiMessage
+      v-for="(message, i) in messages"
+      :key="message.id"
+      :message="message"
+      :show-actions="i === messages.length - 1"
+    />
   </div>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Code, Html } from 'mdast'
+import { BlockCodeHighlight } from '#components'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { gfmFromMarkdown } from 'mdast-util-gfm'
 import { toVNode } from 'mdast-util-to-vnode'
@@ -48,6 +50,24 @@ const vNode = computed(() => {
         mdastExtensions: [gfmFromMarkdown()],
       },
     ),
+    {
+      components: {
+        code: (node: Code) => [
+          BlockCodeHighlight,
+          {
+            value: node.value,
+            lang: node.lang,
+          },
+        ],
+        html: (node: Html) => [
+          BlockCodeHighlight,
+          {
+            value: node.value,
+            lang: 'html',
+          },
+        ],
+      },
+    },
   )
 })
 </script>

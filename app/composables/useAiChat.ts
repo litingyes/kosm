@@ -53,7 +53,7 @@ export function useAiChat(options?: AiChatOptions) {
     })
   }
 
-  const messages = shallowRef<Array<AiChatMessage>>([])
+  const messages = shallowReactive<Array<AiChatMessage>>([])
 
   const status = ref<'error' | 'submitted' | 'streaming' | 'ready'>('ready')
   const abortController = shallowRef<AbortController | null>(null)
@@ -67,26 +67,24 @@ export function useAiChat(options?: AiChatOptions) {
       },
     ])
 
-    messages.value.push(humanMessage)
+    messages.push(humanMessage)
 
     abortController.value = new AbortController()
 
     try {
-      for await (const chunk of await model.value!.stream(messages.value, {
+      for await (const chunk of await model.value!.stream(messages, {
         signal: abortController.value!.signal,
       })) {
         status.value = 'streaming'
 
-        const lastMessage = messages.value[messages.value.length - 1]!
+        const lastMessage = messages[messages.length - 1]!
 
         if (!lastMessage || lastMessage.type !== 'ai') {
-          messages.value.push(chunk)
+          messages.push(chunk)
         }
         else {
-          messages.value[messages.value.length - 1] = (lastMessage as AIMessageChunk).concat(chunk)
+          messages[messages.length - 1] = (lastMessage as AIMessageChunk).concat(chunk)
         }
-
-        triggerRef(messages)
       }
 
       status.value = 'ready'
@@ -96,7 +94,7 @@ export function useAiChat(options?: AiChatOptions) {
       status.value = 'error'
     }
     finally {
-      const lastMessage = messages.value[messages.value.length - 1]!
+      const lastMessage = messages[messages.length - 1]!
       if (lastMessage.type === 'human') {
         lastMessage.id = crypto.randomUUID()
       }
